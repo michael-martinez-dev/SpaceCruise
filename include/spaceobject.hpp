@@ -4,13 +4,16 @@
 
 class SpaceObject {
 private:
+    sf::Texture texture;
     sf::Sprite sprite;
     sf::Vector2f direction;
     float speed;
 
 public:
     SpaceObject(const std::string& texturePath, float speed);
-    virtual void update(const Rocketship& rocket);
+    sf::Sprite getSprite();
+    bool isOutOfBound(float maxX, float maxY);
+    virtual void update(float deltaTime, std::unique_ptr<Rocketship>& rocket);
     virtual void onCollision() = 0;
 };
 

@@ -10,7 +10,7 @@ Star::Star(float x, float y, float radius, float depth)
 }
 
 void Star::update(float deltaTime, int rocketSpeed, int screenHeight, int screenWidth) {
-    sf::Vector2f position = shape.getPosition();
+    sf::Vector2f position = this->shape.getPosition();
 
     position.y += this->speed * deltaTime * rocketSpeed;
 
@@ -19,9 +19,10 @@ void Star::update(float deltaTime, int rocketSpeed, int screenHeight, int screen
         position.x = static_cast<float>(rand() % screenWidth);
     }
 
-    shape.setPosition(position);
+    this->shape.setPosition(position);
 }
 
-sf::CircleShape Star::getShape() {
+sf::CircleShape Star::
+getShape() {
     return this->shape;
 }

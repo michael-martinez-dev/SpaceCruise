@@ -1,13 +1,19 @@
 #include "game.hpp"
 #include "rocketship.hpp"
+#include "spaceobject.hpp"
+#include "planet.hpp"
 #include <SFML/Graphics/Text.hpp>
+#include <algorithm>
 #include <memory>
 #include <iostream>
 #include <thread>
 #include <chrono>
 
-Game::Game() : window(sf::VideoMode(800, 600), "Space Cruise") {
-  this->rocket = std::make_unique<Rocketship>(&this->window);
+Game::Game() : window(sf::VideoMode(800, 600), "Space Cruise"),
+               rocket(std::make_unique<Rocketship>(&this->window)),
+               rng(static_cast<unsigned>(time(nullptr))),
+               distX(0.0f, window.getSize().x),
+               distSpeed(5, 15) {
   this->rocket->enableShake();
 }
 
@@ -93,6 +99,20 @@ void Game::update(float deltaTime) {
     star.update(deltaTime, this->rocket->getSpeed(), windowSize.y, windowSize.x);
   }
   this->rocket->update();
+
+  if(shouldAddNewSpaceObject()) {
+    addRandomSpaceObject();
+  }
+
+  for (auto& obj : this->spaceObjects) {
+    obj->update(deltaTime, rocket);
+  }
+
+  spaceObjects.erase(
+      std::remove_if(spaceObjects.begin(), spaceObjects.end(),
+                     [&](const std::unique_ptr<SpaceObject>& obj) {
+    return obj->isOutOfBound(windowSize.x, windowSize.y);}),
+      spaceObjects.end());
 }
 
 void Game::render(std::chrono::steady_clock::time_point *lastFrameTime) {
@@ -105,6 +125,21 @@ void Game::render(std::chrono::steady_clock::time_point *lastFrameTime) {
   for (auto& star : stars) {
     this->window.draw(star.getShape());
   }
+  for (const auto& obj : spaceObjects) {
+    window.draw(obj->getSprite());
+  }
   this->window.draw(this->rocket->getSprite());
   this->window.display();
+}
+
+void Game::addRandomSpaceObject() {
+  float randomX = this->distX(this->rng);
+  float randomSpeed = this->distSpeed(this->rng);
+  sf::Vector2f startPosition(randomX, 0.0f);
+
+  this->spaceObjects.push_back(std::make_unique<Planet>());
+}
+
+bool Game::shouldAddNewSpaceObject() {
+  return std::rand() % 10;
 }
