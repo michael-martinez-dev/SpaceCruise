@@ -17,23 +17,25 @@ void Game::init() {
     std::cout << "could not find font\n";
     exit(1);
   }
-  for (std::size_t i = 0; i < 3; ++i) {
+  std::vector<std::string> messages = {"3", "2", "1", "LAUNCH!"}; // Add or remove messages as needed
+
+  for (std::size_t i = 0; i < messages.size(); ++i) {
     sf::Text text;
     text.setFont(this->font);
     text.setFillColor(sf::Color::White);
     text.setCharacterSize(48);
+
+    // Set the string from the vector
+    text.setString(messages[i]);
+
     sf::FloatRect textRect = text.getLocalBounds();
-    text.setOrigin(textRect.left + textRect.width / 2.0f,
-                   textRect.top + textRect.height / 2.0f);
+    text.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
+
     sf::Vector2u windowSize = this->window.getSize();
-    text.setPosition((windowSize.x / 2 - textRect.width),
-                             (windowSize.y / 2 - textRect.height));
+    text.setPosition(windowSize.x / 2.0f, windowSize.y / 2.0f);
+
     this->initMsgs.push_back(text);
   }
-  this->initMsgs[0].setString("3");
-  this->initMsgs[1].setString("2");
-  this->initMsgs[2].setString("1");
-  
   this->initializeStars();
 }
 
@@ -101,7 +103,7 @@ void Game::render(std::chrono::steady_clock::time_point *lastFrameTime) {
 
   this->update(deltaTime);
   for (auto& star : stars) {
-    star.draw(window);
+    this->window.draw(star.getShape());
   }
   this->window.draw(this->rocket->getSprite());
   this->window.display();
