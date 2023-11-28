@@ -10,7 +10,7 @@ private:
     float speed;
 
 public:
-    SpaceObject(const std::string& texturePath, float speed);
+    SpaceObject(const std::string& texturePath, float speed, float x_position);
     sf::Sprite getSprite();
     bool isOutOfBound(float maxX, float maxY);
     virtual void update(float deltaTime, std::unique_ptr<Rocketship>& rocket);

@@ -95,6 +95,7 @@ void Game::run() {
 
 void Game::update(float deltaTime) {
   sf::Vector2u windowSize = this->window.getSize();
+  this->timeSinceLastSpaceObject += deltaTime;
   for (auto& star : stars) {
     star.update(deltaTime, this->rocket->getSpeed(), windowSize.y, windowSize.x);
   }
@@ -110,8 +111,9 @@ void Game::update(float deltaTime) {
 
   spaceObjects.erase(
       std::remove_if(spaceObjects.begin(), spaceObjects.end(),
-                     [&](const std::unique_ptr<SpaceObject>& obj) {
-    return obj->isOutOfBound(windowSize.x, windowSize.y);}),
+                       [&](const std::unique_ptr<SpaceObject>& obj) {
+                           return obj->isOutOfBound(windowSize.x, windowSize.y);
+                       }),
       spaceObjects.end());
 }
 
@@ -137,9 +139,9 @@ void Game::addRandomSpaceObject() {
   float randomSpeed = this->distSpeed(this->rng);
   sf::Vector2f startPosition(randomX, 0.0f);
 
-  this->spaceObjects.push_back(std::make_unique<Planet>());
+  this->spaceObjects.push_back(std::make_unique<Planet>(randomSpeed, randomX));
 }
 
 bool Game::shouldAddNewSpaceObject() {
-  return std::rand() % 10;
+  return !(std::rand() % (RAND_MAX/2));
 }

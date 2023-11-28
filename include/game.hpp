@@ -20,6 +20,7 @@ class Game {
     std::uniform_real_distribution<float> distX;
     std::uniform_real_distribution<float> distSpeed;
     std::vector<std::unique_ptr<SpaceObject>> spaceObjects;
+    float timeSinceLastSpaceObject = 5.0f;
 
     void initializeStars();
     void update(float deltaTime);

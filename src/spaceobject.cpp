@@ -5,10 +5,12 @@
 #define MAX_DEGREE_LEFT 315
 #define MAX_DEGREE_RIGHT 45
 
-SpaceObject::SpaceObject(const std::string& texturePath, float speed) {
+SpaceObject::SpaceObject(const std::string& texturePath, float speed, float x_position) {
+    sf::Vector2f startPosition(x_position, 0.0f);
     this->texture.loadFromFile(texturePath);
     texture.loadFromFile(texturePath);
     this->sprite.setTexture(texture);
+    this->sprite.setPosition(startPosition);
     this->speed = speed;
 }
 

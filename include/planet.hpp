@@ -7,14 +7,14 @@
 
 #include "spaceobject.hpp"
 
-class Planet: SpaceObject {
+class Planet: public SpaceObject {
 private:
 
 public:
-Planet(): SpaceObject("static/icons/planet_medium.png", 10) {}
-void onCollision() override {
-  printf("Refueling...");
-}
+    Planet(float speed, float x_position): SpaceObject("static/icons/planet_medium.png", speed, x_position) {}
+    void onCollision() override {
+        printf("Refueling...");
+    }
 };
 
 #endif //PLANET_HPP
