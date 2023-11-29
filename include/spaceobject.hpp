@@ -1,6 +1,11 @@
 #ifndef SPACEOBJECT_H
 #define SPACEOBJECT_H
-#include "rocketship.hpp"
+
+#include <SFML/Graphics.hpp>
+#include <SFML/System/Vector2.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Texture.hpp>
 
 class SpaceObject {
 private:
@@ -13,7 +18,7 @@ public:
     SpaceObject(const std::string& texturePath, float speed, float x_position);
     sf::Sprite getSprite();
     bool isOutOfBound(float maxX, float maxY);
-    virtual void update(float deltaTime, std::unique_ptr<Rocketship>& rocket);
+    virtual void update(float deltaTime, float rocketSpeed, float rocketRotation);
     virtual void onCollision() = 0;
 };
 

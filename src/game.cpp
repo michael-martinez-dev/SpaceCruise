@@ -9,11 +9,14 @@
 #include <thread>
 #include <chrono>
 
+#define MAX_SPEED 10
+#define BASE_COOLDOWN 5.0f
+
 Game::Game() : window(sf::VideoMode(800, 600), "Space Cruise"),
                rocket(std::make_unique<Rocketship>(&this->window)),
                rng(static_cast<unsigned>(time(nullptr))),
                distX(0.0f, window.getSize().x),
-               distSpeed(5, 15) {
+               distSpeed(5, 15), timeSinceLastSpaceObject(0.0f) {
   this->rocket->enableShake();
 }
 
@@ -46,13 +49,13 @@ void Game::init() {
 }
 
 void Game::initializeStars() {
-  int numberOfStars = 100; // Adjust based on desired star density
-  float maxDepth = 5.0f;   // Adjust for parallax effect range
+  int numberOfStars = 100;
+  float maxDepth = 5.0f;
 
   for (int i = 0; i < numberOfStars; ++i) {
     float x = static_cast<float>(rand() % window.getSize().x);
     float y = static_cast<float>(rand() % window.getSize().y);
-    float radius = 1.0f; // Smaller stars for a more realistic look
+    float radius = 1.0f;
     float depth = 1.0f + static_cast<float>(rand()) / (static_cast<float>((float)RAND_MAX / (maxDepth - 1.0f))); // Random depth from 1.0 to maxDepth
 
     stars.emplace_back(x, y, radius, depth);
@@ -106,7 +109,8 @@ void Game::update(float deltaTime) {
   }
 
   for (auto& obj : this->spaceObjects) {
-    obj->update(deltaTime, rocket);
+    obj->update(deltaTime, rocket->getSpeed(), rocket->getSprite().getRotation());
+    rocket->checkObjectCollisoin(*obj);
   }
 
   spaceObjects.erase(
@@ -143,5 +147,12 @@ void Game::addRandomSpaceObject() {
 }
 
 bool Game::shouldAddNewSpaceObject() {
-  return !(std::rand() % (RAND_MAX/2));
+  float speedFactor = this->rocket->getSpeed() / MAX_SPEED; // Assuming MAX_SPEED is defined
+  float dynamicCooldown = BASE_COOLDOWN / (1.0f + speedFactor); // BASE_COOLDOWN is the cooldown at minimum speed
+
+  if (this->timeSinceLastSpaceObject >= dynamicCooldown) {
+    this->timeSinceLastSpaceObject = 0.0f;
+    return true;
+  }
+  return false;
 }

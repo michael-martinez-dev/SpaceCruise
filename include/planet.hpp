@@ -9,12 +9,11 @@
 
 class Planet: public SpaceObject {
 private:
+  bool collided;
 
 public:
-    Planet(float speed, float x_position): SpaceObject("static/icons/planet_medium.png", speed, x_position) {}
-    void onCollision() override {
-        printf("Refueling...");
-    }
+    Planet(float speed, float x_position);
+    void onCollision() override;
 };
 
 #endif //PLANET_HPP

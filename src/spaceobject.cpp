@@ -1,7 +1,10 @@
 #include "spaceobject.hpp"
 #include "rocketship.hpp"
 #include <SFML/System/Vector2.hpp>
-
+#include <SFML/Graphics.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Texture.hpp>
 #define MAX_DEGREE_LEFT 315
 #define MAX_DEGREE_RIGHT 45
 
@@ -24,16 +27,16 @@ bool SpaceObject::isOutOfBound(float maxX, float maxY) {
          position.x > maxX || position.y > maxY;
 }
 
-void SpaceObject::update(float deltaTime, std::unique_ptr<Rocketship>& rocket) {
+void SpaceObject::update(float deltaTime, float rocketSpeed, float rocketRotation) {
     sf::Vector2f position = this->sprite.getPosition();
-    float rocketSpeedInfluence = rocket->getSpeed();
+    float rocketSpeedInfluence = rocketSpeed;
 
-    if (rocket->getSprite().getRotation() != 0) {
+    if (rocketRotation != 0) {
         rocketSpeedInfluence /= 2;
-        if (rocket->getSprite().getRotation() == MAX_DEGREE_LEFT) {
+        if (rocketRotation == MAX_DEGREE_LEFT) {
             position.x += this->speed * deltaTime * rocketSpeedInfluence;
         }
-        else if (rocket->getSprite().getRotation() == MAX_DEGREE_RIGHT) {
+        else if (rocketRotation == MAX_DEGREE_RIGHT) {
             position.x -= this->speed * deltaTime * rocketSpeedInfluence;
         }
     }

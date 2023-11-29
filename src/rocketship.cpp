@@ -3,8 +3,6 @@
 #define MAX_DEGREE_LEFT 315
 #define MAX_DEGREE_RIGHT 45
 #define TURN_DEGREES 45
-#define TRUE 1
-#define FALSE 0
 
 Rocketship::Rocketship(sf::RenderWindow *window) {
   this->window = window;
@@ -38,9 +36,9 @@ void Rocketship::turnLeft() {
   }
 }
 
-void Rocketship::enableShake() { this->shakeOn = TRUE; }
+void Rocketship::enableShake() { this->shakeOn = true; }
 
-void Rocketship::disableShake() { this->shakeOn = FALSE; }
+void Rocketship::disableShake() { this->shakeOn = false; }
 
 void Rocketship::update() {
   if (this->shakeOn) {
@@ -70,4 +68,10 @@ void Rocketship::increaseShake() {
 
 int Rocketship::getSpeed() {
   return this->shakeIntensity;
+}
+
+void Rocketship::checkObjectCollisoin(SpaceObject &obj) {
+  if (this->sprite.getGlobalBounds().intersects(obj.getSprite().getGlobalBounds())) {
+    obj.onCollision();
+  }
 }
