@@ -1,13 +1,9 @@
-//
-// Created by mmartinez on 11/28/23.
-//
-
 #include "planet.hpp"
 
-Planet::Planet(float speed, float x_position): SpaceObject("static/icons/planet_medium.png", speed, x_position), collided(false) {}
+Planet::Planet(float speed, float x_position): SpaceObject("static/icons/planet_medium.png", speed, x_position) {}
 void Planet::onCollision() {
-  if (!this->collided) {
+  if (!this->isCollided()) {
     printf("Refueling...\n");
-    this->collided = true;
+    this->setCollided(true);
   }
 }

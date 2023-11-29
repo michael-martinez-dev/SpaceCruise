@@ -15,6 +15,7 @@ SpaceObject::SpaceObject(const std::string& texturePath, float speed, float x_po
     this->sprite.setTexture(texture);
     this->sprite.setPosition(startPosition);
     this->speed = speed;
+    this->collided = false;
 }
 
 sf::Sprite SpaceObject::getSprite() {

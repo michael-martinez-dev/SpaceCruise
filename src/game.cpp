@@ -2,6 +2,7 @@
 #include "rocketship.hpp"
 #include "spaceobject.hpp"
 #include "planet.hpp"
+#include "asteroid.hpp"
 #include <SFML/Graphics/Text.hpp>
 #include <algorithm>
 #include <memory>
@@ -143,11 +144,16 @@ void Game::addRandomSpaceObject() {
   float randomSpeed = this->distSpeed(this->rng);
   sf::Vector2f startPosition(randomX, 0.0f);
 
-  this->spaceObjects.push_back(std::make_unique<Planet>(randomSpeed, randomX));
+  if (std::rand() % 3) {
+    this->spaceObjects.push_back(std::make_unique<Asteroid>(randomSpeed, randomX));
+  }
+  else {
+    this->spaceObjects.push_back(std::make_unique<Planet>(randomSpeed, randomX));
+  }
 }
 
 bool Game::shouldAddNewSpaceObject() {
-  float speedFactor = this->rocket->getSpeed() / MAX_SPEED; // Assuming MAX_SPEED is defined
+  float speedFactor = this->rocket->getSpeed() / MAX_SPEED;
   float dynamicCooldown = BASE_COOLDOWN / (1.0f + speedFactor); // BASE_COOLDOWN is the cooldown at minimum speed
 
   if (this->timeSinceLastSpaceObject >= dynamicCooldown) {

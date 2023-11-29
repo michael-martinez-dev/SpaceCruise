@@ -9,7 +9,6 @@
 
 class Planet: public SpaceObject {
 private:
-  bool collided;
 
 public:
     Planet(float speed, float x_position);

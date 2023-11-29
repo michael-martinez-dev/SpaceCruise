@@ -13,11 +13,14 @@ private:
     sf::Sprite sprite;
     sf::Vector2f direction;
     float speed;
+    bool collided;
 
 public:
     SpaceObject(const std::string& texturePath, float speed, float x_position);
     sf::Sprite getSprite();
     bool isOutOfBound(float maxX, float maxY);
+    bool isCollided() {return this->collided;};
+    void setCollided(bool collided) {this->collided=collided;};
     virtual void update(float deltaTime, float rocketSpeed, float rocketRotation);
     virtual void onCollision() = 0;
 };
