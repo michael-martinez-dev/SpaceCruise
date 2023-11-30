@@ -10,8 +10,10 @@
 
 SpaceObject::SpaceObject(const std::string& texturePath, float speed, float x_position) {
     sf::Vector2f startPosition(x_position, 0.0f);
-    this->texture.loadFromFile(texturePath);
-    texture.loadFromFile(texturePath);
+    if (!this->texture.loadFromFile(texturePath)) {
+        printf("Could not find texture path\n");
+        exit(1);
+    }
     this->sprite.setTexture(texture);
     this->sprite.setPosition(startPosition);
     this->speed = speed;

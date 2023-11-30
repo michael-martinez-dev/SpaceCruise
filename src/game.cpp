@@ -27,7 +27,7 @@ void Game::init() {
     std::cout << "could not find font\n";
     exit(1);
   }
-  std::vector<std::string> messages = {"3", "2", "1", "LAUNCH!"}; // Add or remove messages as needed
+  std::vector<std::string> messages = {"3", "2", "1", "LAUNCH!"};
 
   for (std::size_t i = 0; i < messages.size(); ++i) {
     sf::Text text;
