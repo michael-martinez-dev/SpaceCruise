@@ -3,6 +3,8 @@
 #include "spaceobject.hpp"
 #include "planet.hpp"
 #include "asteroid.hpp"
+#include "event.hpp"
+#include "eventmanager.hpp"
 #include <SFML/Graphics/Text.hpp>
 #include <algorithm>
 #include <memory>
@@ -19,6 +21,7 @@ Game::Game() : window(sf::VideoMode(800, 600), "Space Cruise"),
                distX(0.0f, window.getSize().x),
                distSpeed(5, 15), timeSinceLastSpaceObject(0.0f) {
   this->rocket->enableShake();
+  EventManager::getInstance()->subscribe(this);
 }
 
 void Game::init() {
@@ -161,4 +164,13 @@ bool Game::shouldAddNewSpaceObject() {
     return true;
   }
   return false;
+}
+
+void Game::onEvent(const Event& event) {
+  if (event.type == Event::Type::CollisionWithPlanet) {
+    printf("Refueling...\n");
+  }
+  else if (event.type == Event::Type::CollisionWithAstroid) {
+    printf("BOOM\n");
+  }
 }

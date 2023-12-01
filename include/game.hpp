@@ -3,13 +3,15 @@
 #include "rocketship.hpp"
 #include "star.hpp"
 #include "spaceobject.hpp"
+#include "eventlistener.hpp"
+#include "event.hpp"
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <vector>
 #include <chrono>
 #include <random>
 
-class Game {
+class Game : public EventListener {
   private:
     sf::RenderWindow window;
     sf::Font font;
@@ -33,6 +35,7 @@ class Game {
     Game();
     void init();
     void run();
+    void onEvent(const Event& event) override;
 };
 
 #endif
