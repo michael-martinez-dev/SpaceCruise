@@ -19,7 +19,8 @@ Game::Game() : window(sf::VideoMode(800, 600), "Space Cruise"),
                rocket(std::make_unique<Rocketship>(&this->window)),
                rng(static_cast<unsigned>(time(nullptr))),
                distX(0.0f, window.getSize().x),
-               distSpeed(5, 15), timeSinceLastSpaceObject(0.0f) {
+               distSpeed(5, 15), timeSinceLastSpaceObject(0.0f),
+               rocketHit(false){
   this->rocket->enableShake();
   EventManager::getInstance()->subscribe(this);
 }
@@ -138,8 +139,16 @@ void Game::render(std::chrono::steady_clock::time_point *lastFrameTime) {
   for (const auto& obj : spaceObjects) {
     window.draw(obj->getSprite());
   }
-  this->window.draw(this->rocket->getSprite());
-  this->window.display();
+  if (this->rocketHit) {
+    this->window.draw(this->rocket->getExplosion());
+    this->window.display();
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+    this->rocketHit = false;
+  }
+  else {
+    this->window.draw(this->rocket->getSprite());
+    this->window.display();
+  }
 }
 
 void Game::addRandomSpaceObject() {
@@ -171,6 +180,6 @@ void Game::onEvent(const Event& event) {
     printf("Refueling...\n");
   }
   else if (event.type == Event::Type::CollisionWithAstroid) {
-    printf("BOOM\n");
+    rocketHit = true;
   }
 }

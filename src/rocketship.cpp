@@ -1,11 +1,17 @@
 #include "rocketship.hpp"
+#include <SFML/Graphics/Sprite.hpp>
+#include <thread>
+#include <chrono>
 #define ROCKET_ICON_PATH "static/icons/rocketship.png"
+#define EXPLOSION_ICON_PATH "static/icons/explosion.png"
 #define MAX_DEGREE_LEFT 315
 #define MAX_DEGREE_RIGHT 45
 #define TURN_DEGREES 45
 
 Rocketship::Rocketship(sf::RenderWindow *window) {
   this->window = window;
+
+  // Rocket Icon
   if (!this->texture.loadFromFile(ROCKET_ICON_PATH)) {
     printf("could not find rocket\n");
     exit(1);
@@ -14,10 +20,21 @@ Rocketship::Rocketship(sf::RenderWindow *window) {
   sf::Vector2u windowSize = this->window->getSize();
   sf::Vector2u textureSize = this->texture.getSize();
   this->sprite.setPosition((windowSize.x / 2),
-                           (windowSize.y / 2));
+                           (windowSize.y - windowSize.y / 5));
   originalPosition = this->sprite.getPosition();
   sf::FloatRect bounds = this->sprite.getLocalBounds();
   this->sprite.setOrigin(bounds.width / 2, bounds.height / 2);
+
+  // Explosion icon
+  if (!this->explosion_texture.loadFromFile(EXPLOSION_ICON_PATH)) {
+    printf("could not find explosion\n");
+    exit(1);
+  }
+  this->explosion_sprite.setTexture(this->explosion_texture);
+  this->explosion_sprite.setPosition((windowSize.x / 2),
+                                     (windowSize.y - windowSize.y / 5));
+  bounds = this->explosion_sprite.getLocalBounds();
+  this->explosion_sprite.setOrigin(bounds.width / 2, bounds.height / 2);
 }
 
 sf::Sprite Rocketship::getSprite() {
@@ -74,4 +91,8 @@ void Rocketship::checkObjectCollisoin(SpaceObject &obj) {
   if (this->sprite.getGlobalBounds().intersects(obj.getSprite().getGlobalBounds())) {
     obj.onCollision();
   }
+}
+
+sf::Sprite Rocketship::getExplosion() {
+  return this->explosion_sprite;
 }

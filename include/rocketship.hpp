@@ -13,6 +13,8 @@ private:
   sf::Vector2f originalPosition;
   sf::Texture texture;
   sf::Sprite sprite;
+  sf::Texture explosion_texture;
+  sf::Sprite explosion_sprite;
   bool shakeOn = false;
   int shakeIntensity = 4;
 
@@ -29,6 +31,7 @@ public:
   void increaseShake();
   int getSpeed();
   void checkObjectCollisoin(SpaceObject& obj);
+  sf::Sprite getExplosion();
 };
 
 #endif
