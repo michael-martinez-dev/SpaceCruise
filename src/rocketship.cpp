@@ -96,3 +96,31 @@ void Rocketship::checkObjectCollisoin(SpaceObject &obj) {
 sf::Sprite Rocketship::getExplosion() {
   return this->explosion_sprite;
 }
+
+ushort Rocketship::getFuel(){
+  return this->fuel;
+}
+
+void Rocketship::increseFuel() {
+  if (this->fuel < this->MAX_FUEL) {
+    this->fuel++;
+  }
+}
+void Rocketship::decreaseFuel() {
+  if (this->fuel > 0) {
+    this->fuel--;
+  }
+}
+void Rocketship::removeLife() {
+  if (this->lives > 0) {
+    this->lives--;
+  }
+}
+
+void Rocketship::resetLives() {
+  this->lives = 3;
+}
+
+bool Rocketship::isDestroyed() {
+  return this->lives == 0;
+}

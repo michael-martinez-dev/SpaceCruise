@@ -16,7 +16,7 @@ class Game : public EventListener {
     sf::RenderWindow window;
     sf::Font font;
     std::unique_ptr<Rocketship> rocket;
-    std::vector<sf::Text> initMsgs;
+    std::vector<sf::Text> preGameMsgs;
     std::vector<Star> stars;
     std::mt19937 rng;
     std::uniform_real_distribution<float> distX;
@@ -24,10 +24,18 @@ class Game : public EventListener {
     std::vector<std::unique_ptr<SpaceObject>> spaceObjects;
     float timeSinceLastSpaceObject;
     bool rocketHit;
+    bool play = true;
+    bool quit = false;
 
+    void initializePreGame(std::vector<std::string> preGameMsgs);
     void initializeStars();
     void update(float deltaTime);
+    void renderPreGame();
     void render(std::chrono::steady_clock::time_point *lastFrameTime);
+    void renderStars();
+    void renderSpaceObjects();
+    void renderStats();
+    void renderPostGame();
     void handleEvents();
     void addRandomSpaceObject();
     bool shouldAddNewSpaceObject();

@@ -6,6 +6,7 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include <sys/types.h>
 
 class Rocketship {
 private:
@@ -16,7 +17,10 @@ private:
   sf::Texture explosion_texture;
   sf::Sprite explosion_sprite;
   bool shakeOn = false;
-  int shakeIntensity = 4;
+  ushort shakeIntensity = 4;
+  static const ushort MAX_FUEL = 100;
+  ushort fuel = MAX_FUEL;
+  ushort lives = 3;
 
 public:
   Rocketship(sf::RenderWindow *window);
@@ -32,6 +36,12 @@ public:
   int getSpeed();
   void checkObjectCollisoin(SpaceObject& obj);
   sf::Sprite getExplosion();
+  ushort getFuel();
+  void increseFuel();
+  void decreaseFuel();
+  void removeLife();
+  void resetLives();
+  bool isDestroyed();
 };
 
 #endif

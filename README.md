@@ -33,7 +33,7 @@ cd SpaceCruiser
   ```
 - **Manual Compilation:**
   ```
-  g++ -o SpaceCruiser src/*.cpp -lsfml-graphics -lsfml-window -lsfml-system
+  g++ -o SpaceCruiser src/*.cpp -lsfml-graphics -lsfml-window -lsfml-system -Iinclude
   ```
 
 3. **Run the Game:**
