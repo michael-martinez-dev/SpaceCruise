@@ -6,6 +6,7 @@ public:
     enum class Type {
         CollisionWithPlanet,
         CollisionWithAstroid,
+        RocketOutOfFuel
     };
     Type type;
 };

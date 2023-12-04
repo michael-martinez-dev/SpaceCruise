@@ -1,12 +1,15 @@
 #include "rocketship.hpp"
+#include "event.hpp"
+#include "eventmanager.hpp"
 #include <SFML/Graphics/Sprite.hpp>
-#include <thread>
 #include <chrono>
+#include <thread>
 #define ROCKET_ICON_PATH "static/icons/rocketship.png"
 #define EXPLOSION_ICON_PATH "static/icons/explosion.png"
 #define MAX_DEGREE_LEFT 315
 #define MAX_DEGREE_RIGHT 45
 #define TURN_DEGREES 45
+#define REFUEL_AMOUNT 25
 
 Rocketship::Rocketship(sf::RenderWindow *window) {
   this->window = window;
@@ -24,6 +27,7 @@ Rocketship::Rocketship(sf::RenderWindow *window) {
   originalPosition = this->sprite.getPosition();
   sf::FloatRect bounds = this->sprite.getLocalBounds();
   this->sprite.setOrigin(bounds.width / 2, bounds.height / 2);
+  this->collisionBox = this->sprite.getGlobalBounds();
 
   // Explosion icon
   if (!this->explosion_texture.loadFromFile(EXPLOSION_ICON_PATH)) {
@@ -37,9 +41,7 @@ Rocketship::Rocketship(sf::RenderWindow *window) {
   this->explosion_sprite.setOrigin(bounds.width / 2, bounds.height / 2);
 }
 
-sf::Sprite Rocketship::getSprite() {
-  return this->sprite;
-}
+sf::Sprite Rocketship::getSprite() { return this->sprite; }
 
 void Rocketship::turnRight() {
   if (sprite.getRotation() != MAX_DEGREE_RIGHT) {
@@ -67,9 +69,7 @@ void Rocketship::update() {
   }
 }
 
-void Rocketship::noShake() {
-  this->shakeIntensity = 0;
-}
+void Rocketship::noShake() { this->shakeIntensity = 0; }
 
 void Rocketship::decreaseShake() {
   if (this->shakeIntensity > 1) {
@@ -78,49 +78,60 @@ void Rocketship::decreaseShake() {
 }
 
 void Rocketship::increaseShake() {
-  if(this->shakeOn && this->shakeIntensity < 10) {
+  if (this->shakeOn && this->shakeIntensity < this->MAX_SPEED) {
     this->shakeIntensity++;
   }
 }
 
-int Rocketship::getSpeed() {
-  return this->shakeIntensity;
-}
+int Rocketship::getSpeed() { return this->shakeIntensity; }
 
 void Rocketship::checkObjectCollisoin(SpaceObject &obj) {
-  if (this->sprite.getGlobalBounds().intersects(obj.getSprite().getGlobalBounds())) {
+  if (this->collisionBox.intersects(
+          obj.getSprite().getGlobalBounds())) {
     obj.onCollision();
   }
 }
 
-sf::Sprite Rocketship::getExplosion() {
-  return this->explosion_sprite;
+void Rocketship::checkFuel() {
+  if (this->fuel == 0) {
+    Event event;
+    event.type = Event::Type::RocketOutOfFuel;
+    EventManager::getInstance()->emit(event);
+  }
 }
 
-ushort Rocketship::getFuel(){
-  return this->fuel;
-}
+sf::Sprite Rocketship::getExplosion() { return this->explosion_sprite; }
+
+short Rocketship::getFuel() { return this->fuel; }
 
 void Rocketship::increseFuel() {
-  if (this->fuel < this->MAX_FUEL) {
-    this->fuel++;
+  if (this->fuel <= this->MAX_FUEL) {
+    this->fuel += REFUEL_AMOUNT;
+    if (this-> fuel > this->MAX_FUEL) {
+      this->fuel = this->MAX_FUEL;
+    }
   }
 }
+
 void Rocketship::decreaseFuel() {
   if (this->fuel > 0) {
-    this->fuel--;
+    this->fuel -= this->shakeIntensity / 2;
+  }
+  if (this->fuel < 0) {
+    this->fuel = 0;
   }
 }
+
+void Rocketship::resetFuel() { this->fuel = this->MAX_FUEL; }
+
 void Rocketship::removeLife() {
   if (this->lives > 0) {
     this->lives--;
   }
 }
 
-void Rocketship::resetLives() {
-  this->lives = 3;
-}
+int Rocketship::getLives() { return this->lives; }
 
-bool Rocketship::isDestroyed() {
-  return this->lives == 0;
-}
+void Rocketship::resetLives() { this->lives = 3; }
+
+bool Rocketship::isDestroyed() { return this->lives == 0; }

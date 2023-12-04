@@ -23,6 +23,9 @@ public:
     void setCollided(bool collided) {this->collided=collided;};
     virtual void update(float deltaTime, float rocketSpeed, float rocketRotation);
     virtual void onCollision() = 0;
+    sf::FloatRect getBoundingBox() const {
+      return this->sprite.getGlobalBounds();
+    };
 };
 
 #endif //SPACEOBJECT_H

@@ -23,6 +23,7 @@ class Game : public EventListener {
     std::uniform_real_distribution<float> distSpeed;
     std::vector<std::unique_ptr<SpaceObject>> spaceObjects;
     float timeSinceLastSpaceObject;
+    float timeSinceLastFuelDecrease;
     bool rocketHit;
     bool play = true;
     bool quit = false;

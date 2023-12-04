@@ -16,13 +16,16 @@ private:
   sf::Sprite sprite;
   sf::Texture explosion_texture;
   sf::Sprite explosion_sprite;
+  sf::FloatRect collisionBox;
   bool shakeOn = false;
-  ushort shakeIntensity = 4;
-  static const ushort MAX_FUEL = 100;
-  ushort fuel = MAX_FUEL;
-  ushort lives = 3;
+  short shakeIntensity = 4;
+  short fuel = MAX_FUEL;
+  short lives = MAX_LIVES;
 
 public:
+  static const short MAX_FUEL = 100;
+  static const short MAX_LIVES = 3;
+  static const short MAX_SPEED = 20;
   Rocketship(sf::RenderWindow *window);
   sf::Sprite getSprite();
   void turnLeft();
@@ -35,13 +38,19 @@ public:
   void increaseShake();
   int getSpeed();
   void checkObjectCollisoin(SpaceObject& obj);
+  void checkFuel();
   sf::Sprite getExplosion();
-  ushort getFuel();
+  short getFuel();
   void increseFuel();
   void decreaseFuel();
+  void resetFuel();
   void removeLife();
+  int getLives();
   void resetLives();
   bool isDestroyed();
+  sf::FloatRect getBoundingBox() const {
+      return this->collisionBox;
+  };
 };
 
 #endif
