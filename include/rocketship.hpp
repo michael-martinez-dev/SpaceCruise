@@ -1,14 +1,16 @@
 #ifndef ROCKETSHIP_H
 #define ROCKETSHIP_H
 
+#include "gameobject.hpp"
 #include "spaceobject.hpp"
+
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
-#include <sys/types.h>
 
-class Rocketship {
+class Rocketship : GameObject {
 private:
   sf::RenderWindow *window;
   sf::Vector2f originalPosition;
@@ -48,9 +50,7 @@ public:
   int getLives();
   void resetLives();
   bool isDestroyed();
-  sf::FloatRect getBoundingBox() const {
-      return this->collisionBox;
-  };
+  sf::FloatRect getBoundingBox() const;
 };
 
 #endif

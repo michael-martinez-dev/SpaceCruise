@@ -1,10 +1,12 @@
 #include "spaceobject.hpp"
 #include "rocketship.hpp"
+
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
+
 #define MAX_DEGREE_LEFT 315
 #define MAX_DEGREE_RIGHT 45
 
@@ -47,3 +49,7 @@ void SpaceObject::update(float deltaTime, float rocketSpeed, float rocketRotatio
 
     this->sprite.setPosition(position);
 }
+
+sf::FloatRect SpaceObject::getBoundingBox() const {
+  return this->sprite.getGlobalBounds();
+};

@@ -1,13 +1,15 @@
 #ifndef SPACEOBJECT_H
 #define SPACEOBJECT_H
 
+#include "gameobject.hpp"
+
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
 
-class SpaceObject {
+class SpaceObject : GameObject {
 private:
     sf::Texture texture;
     sf::Sprite sprite;
@@ -23,9 +25,7 @@ public:
     void setCollided(bool collided) {this->collided=collided;};
     virtual void update(float deltaTime, float rocketSpeed, float rocketRotation);
     virtual void onCollision() = 0;
-    sf::FloatRect getBoundingBox() const {
-      return this->sprite.getGlobalBounds();
-    };
+    sf::FloatRect getBoundingBox() const;
 };
 
 #endif //SPACEOBJECT_H

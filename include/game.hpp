@@ -1,15 +1,19 @@
 #ifndef GAME_HPP
 #define GAME_HPP
+
 #include "rocketship.hpp"
 #include "star.hpp"
 #include "spaceobject.hpp"
 #include "eventlistener.hpp"
 #include "event.hpp"
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Graphics/Text.hpp>
+
 #include <vector>
 #include <chrono>
 #include <random>
+
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/Text.hpp>
+
 
 class Game : public EventListener {
   private:

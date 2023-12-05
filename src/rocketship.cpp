@@ -1,9 +1,11 @@
 #include "rocketship.hpp"
 #include "event.hpp"
 #include "eventmanager.hpp"
+
 #include <SFML/Graphics/Sprite.hpp>
 #include <chrono>
 #include <thread>
+
 #define ROCKET_ICON_PATH "static/icons/rocketship.png"
 #define EXPLOSION_ICON_PATH "static/icons/explosion.png"
 #define MAX_DEGREE_LEFT 315
@@ -135,3 +137,7 @@ int Rocketship::getLives() { return this->lives; }
 void Rocketship::resetLives() { this->lives = 3; }
 
 bool Rocketship::isDestroyed() { return this->lives == 0; }
+
+sf::FloatRect Rocketship::getBoundingBox() const {
+  return this->collisionBox;
+};
