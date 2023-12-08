@@ -13,6 +13,10 @@ Space Cruise is an immersive, space-themed 2D game where players navigate a spac
 ### Prerequisites
 
 - SFML (Simple and Fast Multimedia Library)
+  ```bash
+  # ubuntu
+  sudo apt-get install libsfml-dev
+  ```
 - A C++17 compatible compiler
 - CMake (optional, for build automation)
 
@@ -20,7 +24,7 @@ Space Cruise is an immersive, space-themed 2D game where players navigate a spac
 
 1. **Clone the Repository:**
 ```
-git clone https://github.com/michael-martinez-dev/SpaceCruiser.git
+git clone https://github.com/michael-martinez-dev/SpaceCruise.git
 cd SpaceCruiser
 ```
 
