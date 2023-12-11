@@ -41,6 +41,7 @@ Rocketship::Rocketship(sf::RenderWindow *window) {
                                      (windowSize.y - windowSize.y / 5));
   bounds = this->explosion_sprite.getLocalBounds();
   this->explosion_sprite.setOrigin(bounds.width / 2, bounds.height / 2);
+
 }
 
 sf::Sprite Rocketship::getSprite() { return this->sprite; }
@@ -74,7 +75,7 @@ void Rocketship::update() {
 void Rocketship::noShake() { this->shakeIntensity = 0; }
 
 void Rocketship::decreaseShake() {
-  if (this->shakeIntensity > 1) {
+  if (this->shakeIntensity > 1 && this->shakeIntensity > this->minSpeed) {
     this->shakeIntensity--;
   }
 }
@@ -85,7 +86,12 @@ void Rocketship::increaseShake() {
   }
 }
 
-int Rocketship::getSpeed() { return this->shakeIntensity; }
+int Rocketship::getSpeed() {
+  if (this->shakeIntensity < this->minSpeed) {
+    return this->minSpeed;
+  }
+  return this->shakeIntensity;
+}
 
 void Rocketship::checkObjectCollisoin(SpaceObject &obj) {
   if (this->collisionBox.intersects(
@@ -141,3 +147,16 @@ bool Rocketship::isDestroyed() { return this->lives == 0; }
 sf::FloatRect Rocketship::getBoundingBox() const {
   return this->collisionBox;
 };
+
+void Rocketship::setMinSpeed(short speed) {
+  if (this->minSpeed < this->MAX_SPEED) {
+    this->minSpeed = speed;
+  }
+}
+
+short Rocketship::getMinSpeed() {
+  if (this->minSpeed < this->MAX_SPEED) {
+    return this->minSpeed;
+  }
+  return this->MAX_SPEED;
+}

@@ -5,6 +5,7 @@
 #include "spaceobject.hpp"
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -20,6 +21,7 @@ private:
   sf::Sprite explosion_sprite;
   sf::FloatRect collisionBox;
   bool shakeOn = false;
+  short minSpeed = 0;
   short shakeIntensity = 4;
   short fuel = MAX_FUEL;
   short lives = MAX_LIVES;
@@ -38,6 +40,8 @@ public:
   void noShake();
   void decreaseShake();
   void increaseShake();
+  short getMinSpeed();
+  void setMinSpeed(short speed);
   int getSpeed();
   void checkObjectCollisoin(SpaceObject& obj);
   void checkFuel();

@@ -2,11 +2,10 @@
 
 Star::Star(float x, float y, float radius, float depth)
     : depth(depth), speed(1.0f / depth) {
-    shape.setRadius(radius);
-    shape.setPosition(x, y);
-    shape.setFillColor(sf::Color::White);
-
-    shape.setOrigin(radius, radius);
+    this->shape.setRadius(radius);
+    this->shape.setPosition(x, y);
+    this->shape.setFillColor(sf::Color::White);
+    this->shape.setOrigin(radius, radius);
 }
 
 void Star::update(float deltaTime, int rocketSpeed, int screenHeight, int screenWidth) {

@@ -6,6 +6,7 @@
 #include "rocketship.hpp"
 #include "spaceobject.hpp"
 #include <SFML/Graphics/Text.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <algorithm>
 #include <chrono>
@@ -16,7 +17,8 @@
 
 #define MAX_SPEED 10
 #define BASE_COOLDOWN 20.0f
-#define DEBUG false
+#define SCORE_DIV_CONSTANT 100
+#define DEBUG true
 
 Game::Game()
     : window(sf::VideoMode(800, 600), "Space Cruise"),
@@ -24,7 +26,7 @@ Game::Game()
       rng(static_cast<unsigned>(time(nullptr))),
       distX(0.0f, window.getSize().x), distSpeed(5, 15),
       timeSinceLastSpaceObject(0.0f), timeSinceLastFuelDecrease(0.0f),
-      rocketHit(false) {
+      rocketHit(false), score(0) {
   this->rocket->enableShake();
   EventManager::getInstance()->subscribe(this);
 }
@@ -45,6 +47,9 @@ void Game::init() {
   this->rocket->resetFuel();
   this->timeSinceLastSpaceObject = 0.0f;
   this->timeSinceLastFuelDecrease = 0.0f;
+  if (this->rocket->getLives() == 3) {
+    this->score = 0;
+  }
 }
 
 void Game::initializePreGame(std::vector<std::string> preGameMsgs) {
@@ -137,6 +142,7 @@ void Game::update(float deltaTime) {
   sf::Vector2u windowSize = this->window.getSize();
   this->timeSinceLastSpaceObject += deltaTime;
   this->timeSinceLastFuelDecrease += deltaTime;
+  this->timeSincePopupStart += deltaTime;
   for (auto &star : stars) {
     star.update(deltaTime, this->rocket->getSpeed(), windowSize.y,
                 windowSize.x);
@@ -158,8 +164,12 @@ void Game::update(float deltaTime) {
   if (this->timeSinceLastFuelDecrease >= 2) {
     this->rocket->decreaseFuel();
     this->timeSinceLastFuelDecrease = 0.0f;
+    this->score += this->rocket->getSpeed();
   }
-  rocket->checkFuel();
+  this->rocket->checkFuel();
+  if (this->score > 0) {
+    this->rocket->setMinSpeed((short)this->score / SCORE_DIV_CONSTANT);
+  }
 
   spaceObjects.erase(
       std::remove_if(spaceObjects.begin(), spaceObjects.end(),
@@ -167,6 +177,7 @@ void Game::update(float deltaTime) {
                        return obj->isOutOfBound(windowSize.x, windowSize.y);
                      }),
       spaceObjects.end());
+
 }
 
 void Game::renderPreGame() {
@@ -204,6 +215,15 @@ void Game::render(std::chrono::steady_clock::time_point *lastFrameTime) {
       objectBox.setOutlineColor(sf::Color::Green);
       objectBox.setOutlineThickness(1);
       this->window.draw(objectBox);
+    }
+  }
+
+  if(this->displayPopupText) {
+    this->window.draw(*this->popupText);
+    if (this->timeSincePopupStart > 2) {
+      free(this->popupText);
+      this->popupText = NULL;
+      this->displayPopupText = false;
     }
   }
 
@@ -270,6 +290,18 @@ void Game::renderStats() {
                      speedTextRect.top + speedTextRect.height / 2.0f);
   speedText.setPosition(speedTextRect.width / 2.0f + 10.0f, speedTextRect.height / 2.0f + 10.0f * 7);
   this->window.draw(speedText);
+
+
+  sf::Text scoreText;
+  scoreText.setFont(this->font);
+  scoreText.setFillColor(sf::Color::White);
+  scoreText.setCharacterSize(26);
+  scoreText.setString("Score: " + std::to_string(this->score));
+  sf::FloatRect scoreTextRect = scoreText.getLocalBounds();
+  scoreText.setOrigin(scoreTextRect.left + scoreTextRect.width / 2.0f,
+                      scoreTextRect.top + scoreTextRect.height / 2.0f);
+  scoreText.setPosition(scoreTextRect.width / 2.0f + 10.0f, scoreTextRect.height / 2.0f + 10.0f * 10);
+  this->window.draw(scoreText);
 }
 
 void Game::renderSpaceObjects() {
@@ -284,14 +316,26 @@ void Game::renderPostGame() {
   text.setFillColor(sf::Color::White);
   text.setCharacterSize(48);
 
-  // Set the string from the vector
-  text.setString("GAME OVER");
+  text.setString("Final Score: " + std::to_string(this->score));
 
   sf::FloatRect textRect = text.getLocalBounds();
   text.setOrigin(textRect.left + textRect.width / 2.0f,
                  textRect.top + textRect.height / 2.0f);
-
   sf::Vector2u windowSize = this->window.getSize();
+  text.setPosition(windowSize.x / 2.0f, windowSize.y / 2.0f);
+
+  this->window.clear();
+  this->window.display();
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
+  this->window.draw(text);
+  this->window.display();
+  std::this_thread::sleep_for(std::chrono::seconds(5));
+
+  text.setString("GAME OVER");
+
+  textRect = text.getLocalBounds();
+  text.setOrigin(textRect.left + textRect.width / 2.0f,
+                 textRect.top + textRect.height / 2.0f);
   text.setPosition(windowSize.x / 2.0f, windowSize.y / 2.0f);
 
   for (int i = 0; i < 3; i++) {
@@ -347,16 +391,39 @@ bool Game::shouldAddNewSpaceObject() {
 
 void Game::onEvent(const Event &event) {
   if (event.type == Event::Type::CollisionWithPlanet) {
-    std::cout << "Refueling..." << std::endl;
     this->rocket->increseFuel();
+    sf::Vector2f position = this->rocket->getSprite().getPosition();
+    position.y += this->window.getSize().y / 10;
+    this->popup("+25 fuel", sf::Color::Green, position);
+    this->timeSinceLastFuelDecrease = 0.0f;
   } else if (event.type == Event::Type::CollisionWithAstroid) {
-    std::cout << "Hit!" << std::endl;
     rocketHit = true;
     this->rocket->removeLife();
   } else if (event.type == Event::Type::RocketOutOfFuel) {
-    std::cout << "You're on 'E'!" << std::endl;
     rocketHit = true;
+    sf::Vector2f position = this->rocket->getSprite().getPosition();
+    position.y += this->window.getSize().y / 10;
+    this->popup("Out of fuel!", sf::Color::Red, position);
     this->rocket->removeLife();
     this->rocket->resetFuel();
   }
+}
+
+void Game::popup(std::string msg, sf::Color color, sf::Vector2f position) {
+  this->popupText = new sf::Text();
+  this->popupText->setFont(this->font);
+  this->popupText->setFillColor(color);
+  this->popupText->setString(msg);
+  sf::FloatRect textRect = this->popupText->getLocalBounds();
+  this->popupText->setOrigin(textRect.left + textRect.width / 2.0f,
+                 textRect.top + textRect.height / 2.0f);
+  sf::Vector2u windowSize = this->window.getSize();
+  this->popupText->setPosition(position.x, position.y);
+
+  this->displayPopupText = true;
+  this->timeSincePopupStart = 0.0f;
+}
+
+void Game::popup(sf::Sprite sprite, sf::Color color, sf::Vector2f position) {
+
 }

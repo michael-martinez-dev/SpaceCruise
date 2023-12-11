@@ -7,6 +7,8 @@
 #include "eventlistener.hpp"
 #include "event.hpp"
 
+#include <SFML/Graphics/Color.hpp>
+#include <memory>
 #include <vector>
 #include <chrono>
 #include <random>
@@ -26,11 +28,16 @@ class Game : public EventListener {
     std::uniform_real_distribution<float> distX;
     std::uniform_real_distribution<float> distSpeed;
     std::vector<std::unique_ptr<SpaceObject>> spaceObjects;
+    sf::Text *popupText = NULL;
+    sf::Sprite *popupImage = NULL;
     float timeSinceLastSpaceObject;
     float timeSinceLastFuelDecrease;
+    float timeSincePopupStart;
+    int score;
     bool rocketHit;
     bool play = true;
     bool quit = false;
+    bool displayPopupText = false;
 
     void initializePreGame(std::vector<std::string> preGameMsgs);
     void initializeStars();
@@ -44,12 +51,18 @@ class Game : public EventListener {
     void handleEvents();
     void addRandomSpaceObject();
     bool shouldAddNewSpaceObject();
+    void popup(std::string msg, sf::Color color, sf::Vector2f position);
+    void popup(sf::Sprite sprite, sf::Color color, sf::Vector2f position);
 
   public:
     Game();
     void init();
     void run();
     void onEvent(const Event& event) override;
+    ~Game() {
+      free(this->popupText);
+      free(this->popupImage);
+    };
 };
 
 #endif
