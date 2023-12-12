@@ -20,6 +20,8 @@
 #define SCORE_DIV_CONSTANT 100
 #define DEBUG true
 
+bool debug = DEBUG;
+
 Game::Game()
     : window(sf::VideoMode(800, 600), "Space Cruise"),
       rocket(std::make_unique<Rocketship>(&this->window)),
@@ -99,7 +101,10 @@ void Game::run() {
     auto lastFrameTime = std::chrono::steady_clock::now();
     while (!this->rocket->isDestroyed() && this->window.isOpen()) {
       this->handleEvents();
-      this->render(&lastFrameTime);
+      this->render();
+      if(!this->isPaused) {
+        this->update(&lastFrameTime);
+      }
     }
     this->renderPostGame();
   }
@@ -113,32 +118,42 @@ void Game::handleEvents() {
       exit(0);
     }
     if (event.type == sf::Event::KeyPressed) {
-      if (event.key.code == sf::Keyboard::Right) {
-        this->rocket->turnRight();
-      } else if (event.key.code == sf::Keyboard::Left) {
-        this->rocket->turnLeft();
-      } else if (event.key.code == sf::Keyboard::Up) {
-        this->rocket->increaseShake();
-      } else if (event.key.code == sf::Keyboard::Down) {
-        this->rocket->decreaseShake();
-      } else if (event.key.code == sf::Keyboard::C) {
-        if (this->rocket->isDestroyed()) {
+      if (this->rocket->isDestroyed()) {
+        if (event.key.code == sf::Keyboard::C) {
           this->play = true;
           this->rocket->resetLives();
-          return;
-        }
-      } else if (event.key.code == sf::Keyboard::Q) {
-        if (this->rocket->isDestroyed()) {
+        } else if (event.key.code == sf::Keyboard::Q) {
           this->quit = true;
           this->window.close();
-          return;
         }
+        return;
+      }
+      if(!isPaused) {
+        if (event.key.code == sf::Keyboard::Right) {
+          this->rocket->turnRight();
+        } else if (event.key.code == sf::Keyboard::Left) {
+          this->rocket->turnLeft();
+        } else if (event.key.code == sf::Keyboard::Up) {
+          this->rocket->increaseShake();
+        } else if (event.key.code == sf::Keyboard::Down) {
+          this->rocket->decreaseShake();
+        }
+      }
+      if (event.key.code == sf::Keyboard::D) {
+        debug = !debug;
+      } else if (event.key.code == sf::Keyboard::Space) {
+        this->togglePause();
       }
     }
   }
 }
 
-void Game::update(float deltaTime) {
+void Game::update(std::chrono::steady_clock::time_point *lastFrameTime) {
+  auto currentTime = std::chrono::steady_clock::now();
+  float deltaTime =
+      std::chrono::duration<float>(currentTime - *lastFrameTime).count();
+  *lastFrameTime = currentTime;
+
   sf::Vector2u windowSize = this->window.getSize();
   this->timeSinceLastSpaceObject += deltaTime;
   this->timeSinceLastFuelDecrease += deltaTime;
@@ -190,14 +205,9 @@ void Game::renderPreGame() {
   }
 }
 
-void Game::render(std::chrono::steady_clock::time_point *lastFrameTime) {
+void Game::render() {
   this->window.clear();
-  auto currentTime = std::chrono::steady_clock::now();
-  float deltaTime =
-      std::chrono::duration<float>(currentTime - *lastFrameTime).count();
-  *lastFrameTime = currentTime;
-
-  if (DEBUG) {
+  if (debug) {
     float rocketRadius = this->rocket->getCollisionRadius();
     sf::CircleShape rocketCircle(rocketRadius);
     rocketCircle.setPosition(this->rocket->getOriginalPosition() - sf::Vector2f(rocketRadius, rocketRadius));
@@ -227,7 +237,12 @@ void Game::render(std::chrono::steady_clock::time_point *lastFrameTime) {
     }
   }
 
-  this->update(deltaTime);
+  if (this->isPaused) {
+    sf::Text pauseText("||", this->font, 24);
+    pauseText.setPosition(this->window.getSize().x / 2, this->window.getSize().y / 2);
+    this->window.draw(pauseText);
+  }
+
   this->renderStars();
   this->renderSpaceObjects();
   this->renderStats();

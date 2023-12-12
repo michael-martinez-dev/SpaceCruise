@@ -38,12 +38,13 @@ class Game : public EventListener {
     bool play = true;
     bool quit = false;
     bool displayPopupText = false;
+    bool isPaused = false;
 
     void initializePreGame(std::vector<std::string> preGameMsgs);
     void initializeStars();
-    void update(float deltaTime);
+    void update(std::chrono::steady_clock::time_point *lastFrameTime);
     void renderPreGame();
-    void render(std::chrono::steady_clock::time_point *lastFrameTime);
+    void render();
     void renderStars();
     void renderSpaceObjects();
     void renderStats();
@@ -53,6 +54,7 @@ class Game : public EventListener {
     bool shouldAddNewSpaceObject();
     void popup(std::string msg, sf::Color color, sf::Vector2f position);
     void popup(sf::Sprite sprite, sf::Color color, sf::Vector2f position);
+    void togglePause() {this->isPaused = !this->isPaused;};
 
   public:
     Game();
