@@ -198,23 +198,23 @@ void Game::render(std::chrono::steady_clock::time_point *lastFrameTime) {
   *lastFrameTime = currentTime;
 
   if (DEBUG) {
-    sf::FloatRect rocketBounds = this->rocket->getBoundingBox();
-    sf::RectangleShape rocketBox(sf::Vector2f(rocketBounds.width, rocketBounds.height));
-    rocketBox.setPosition(rocketBounds.left, rocketBounds.top);
-    rocketBox.setFillColor(sf::Color::Transparent);
-    rocketBox.setOutlineColor(sf::Color::Red);
-    rocketBox.setOutlineThickness(1);
-    this->window.draw(rocketBox);
+    float rocketRadius = this->rocket->getCollisionRadius();
+    sf::CircleShape rocketCircle(rocketRadius);
+    rocketCircle.setPosition(this->rocket->getOriginalPosition() - sf::Vector2f(rocketRadius, rocketRadius));
+    rocketCircle.setFillColor(sf::Color::Transparent);
+    rocketCircle.setOutlineColor(sf::Color::Red);
+    rocketCircle.setOutlineThickness(1);
+    this->window.draw(rocketCircle);
 
     // Draw bounding boxes for space objects
     for (const auto& obj : spaceObjects) {
-      sf::FloatRect objectBounds = obj->getBoundingBox();
-      sf::RectangleShape objectBox(sf::Vector2f(objectBounds.width, objectBounds.height));
-      objectBox.setPosition(objectBounds.left, objectBounds.top);
-      objectBox.setFillColor(sf::Color::Transparent);
-      objectBox.setOutlineColor(sf::Color::Green);
-      objectBox.setOutlineThickness(1);
-      this->window.draw(objectBox);
+      float objectRadius = obj->getCollisionRadius();
+      sf::CircleShape objectCircle(objectRadius);
+      objectCircle.setPosition(obj->getSprite().getPosition() - sf::Vector2f(objectRadius, objectRadius));
+      objectCircle.setFillColor(sf::Color::Transparent);
+      objectCircle.setOutlineColor(sf::Color::Green);
+      objectCircle.setOutlineThickness(1);
+      this->window.draw(objectCircle);
     }
   }
 

@@ -1,9 +1,13 @@
 #include "rocketship.hpp"
 #include "event.hpp"
 #include "eventmanager.hpp"
+#include "gameobject.hpp"
+#include "spaceobject.hpp"
 
 #include <SFML/Graphics/Sprite.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <chrono>
+#include <cmath>
 #include <thread>
 
 #define ROCKET_ICON_PATH "static/icons/rocketship.png"
@@ -26,7 +30,7 @@ Rocketship::Rocketship(sf::RenderWindow *window) {
   sf::Vector2u textureSize = this->texture.getSize();
   this->sprite.setPosition((windowSize.x / 2),
                            (windowSize.y - windowSize.y / 5));
-  originalPosition = this->sprite.getPosition();
+  this->originalPosition = this->sprite.getPosition();
   sf::FloatRect bounds = this->sprite.getLocalBounds();
   this->sprite.setOrigin(bounds.width / 2, bounds.height / 2);
   this->collisionBox = this->sprite.getGlobalBounds();
@@ -44,7 +48,7 @@ Rocketship::Rocketship(sf::RenderWindow *window) {
 
 }
 
-sf::Sprite Rocketship::getSprite() { return this->sprite; }
+sf::Sprite Rocketship::getSprite() const { return this->sprite; }
 
 void Rocketship::turnRight() {
   if (sprite.getRotation() != MAX_DEGREE_RIGHT) {
@@ -93,12 +97,13 @@ int Rocketship::getSpeed() {
   return this->shakeIntensity;
 }
 
-void Rocketship::checkObjectCollisoin(SpaceObject &obj) {
-  if (this->collisionBox.intersects(
-          obj.getSprite().getGlobalBounds())) {
+void Rocketship::checkObjectCollisoin(SpaceObject& obj) {
+  if (this->areColliding(obj)) {
     obj.onCollision();
   }
 }
+
+
 
 void Rocketship::checkFuel() {
   if (this->fuel == 0) {
@@ -159,4 +164,21 @@ short Rocketship::getMinSpeed() {
     return this->minSpeed;
   }
   return this->MAX_SPEED;
+}
+
+float Rocketship::getCollisionRadius() const {
+  return this->texture.getSize().y / 2;
+}
+
+sf::Vector2f Rocketship::getOriginalPosition() {
+  return this->originalPosition;
+}
+
+bool Rocketship::areColliding(const SpaceObject& obj) {
+  sf::Vector2f positionSelf = this->originalPosition;
+  sf::Vector2f position2Obj = obj.getSprite().getPosition();
+  float dx = positionSelf.x - position2Obj.x;
+  float dy = positionSelf.y - position2Obj.y;
+  float dist = std::sqrt(dx * dx + dy * dy);
+  return dist < (this->getCollisionRadius() + obj.getCollisionRadius());
 }

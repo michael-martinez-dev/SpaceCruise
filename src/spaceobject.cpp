@@ -18,11 +18,13 @@ SpaceObject::SpaceObject(const std::string& texturePath, float speed, float x_po
     }
     this->sprite.setTexture(texture);
     this->sprite.setPosition(startPosition);
+    sf::FloatRect bounds = this->sprite.getLocalBounds();
+    this->sprite.setOrigin(bounds.width / 2, bounds.height / 2);
     this->speed = speed;
     this->collided = false;
 }
 
-sf::Sprite SpaceObject::getSprite() {
+sf::Sprite SpaceObject::getSprite() const {
     return this->sprite;
 }
 
@@ -53,3 +55,7 @@ void SpaceObject::update(float deltaTime, float rocketSpeed, float rocketRotatio
 sf::FloatRect SpaceObject::getBoundingBox() const {
   return this->sprite.getGlobalBounds();
 };
+
+float SpaceObject::getCollisionRadius() const {
+  return this->texture.getSize().y / 2;
+}

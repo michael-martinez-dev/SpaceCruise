@@ -26,12 +26,14 @@ private:
   short fuel = MAX_FUEL;
   short lives = MAX_LIVES;
 
+  bool areColliding(const SpaceObject& obj);
+
 public:
   static const short MAX_FUEL = 100;
   static const short MAX_LIVES = 3;
   static const short MAX_SPEED = 20;
   Rocketship(sf::RenderWindow *window);
-  sf::Sprite getSprite();
+  sf::Sprite getSprite() const override;
   void turnLeft();
   void turnRight();
   void enableShake();
@@ -54,7 +56,9 @@ public:
   int getLives();
   void resetLives();
   bool isDestroyed();
-  sf::FloatRect getBoundingBox() const;
+  sf::FloatRect getBoundingBox() const override;
+  sf::Vector2f getOriginalPosition();
+float getCollisionRadius() const override;
 };
 
 #endif
