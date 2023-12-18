@@ -15,9 +15,7 @@ class Rocketship : GameObject {
 private:
   sf::RenderWindow *window;
   sf::Vector2f originalPosition;
-  sf::Texture texture;
   sf::Sprite sprite;
-  sf::Texture explosion_texture;
   sf::Sprite explosion_sprite;
   sf::FloatRect collisionBox;
   bool shakeOn = false;
@@ -31,7 +29,7 @@ private:
 public:
   static const short MAX_FUEL = 100;
   static const short MAX_LIVES = 3;
-  static const short MAX_SPEED = 20;
+  static const short MAX_SPEED = 25;
   Rocketship(sf::RenderWindow *window);
   sf::Sprite getSprite() const override;
   void turnLeft();

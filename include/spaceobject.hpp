@@ -8,10 +8,11 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include <string>
 
 class SpaceObject : GameObject {
 private:
-    sf::Texture texture;
+    std::string texturePath;
     sf::Sprite sprite;
     sf::Vector2f direction;
     float speed;

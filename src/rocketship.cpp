@@ -2,6 +2,7 @@
 #include "event.hpp"
 #include "eventmanager.hpp"
 #include "gameobject.hpp"
+#include "resourcemanager.hpp"
 #include "spaceobject.hpp"
 
 #include <SFML/Graphics/Sprite.hpp>
@@ -21,13 +22,9 @@ Rocketship::Rocketship(sf::RenderWindow *window) {
   this->window = window;
 
   // Rocket Icon
-  if (!this->texture.loadFromFile(ROCKET_ICON_PATH)) {
-    printf("could not find rocket\n");
-    exit(1);
-  }
-  this->sprite.setTexture(this->texture);
+  this->sprite.setTexture(ResourceManager::getInstance()->getTexture(ROCKET_ICON_PATH));
   sf::Vector2u windowSize = this->window->getSize();
-  sf::Vector2u textureSize = this->texture.getSize();
+  sf::Vector2u textureSize = this->sprite.getTexture()->getSize();
   this->sprite.setPosition((windowSize.x / 2),
                            (windowSize.y - windowSize.y / 5));
   this->originalPosition = this->sprite.getPosition();
@@ -36,11 +33,7 @@ Rocketship::Rocketship(sf::RenderWindow *window) {
   this->collisionBox = this->sprite.getGlobalBounds();
 
   // Explosion icon
-  if (!this->explosion_texture.loadFromFile(EXPLOSION_ICON_PATH)) {
-    printf("could not find explosion\n");
-    exit(1);
-  }
-  this->explosion_sprite.setTexture(this->explosion_texture);
+  this->explosion_sprite.setTexture(ResourceManager::getInstance()->getTexture(EXPLOSION_ICON_PATH));
   this->explosion_sprite.setPosition((windowSize.x / 2),
                                      (windowSize.y - windowSize.y / 5));
   bounds = this->explosion_sprite.getLocalBounds();
@@ -128,7 +121,7 @@ void Rocketship::increseFuel() {
 
 void Rocketship::decreaseFuel() {
   if (this->fuel > 0) {
-    this->fuel -= this->shakeIntensity / 2;
+    this->fuel -= this->getSpeed() / 2;
   }
   if (this->fuel < 0) {
     this->fuel = 0;
@@ -167,7 +160,7 @@ short Rocketship::getMinSpeed() {
 }
 
 float Rocketship::getCollisionRadius() const {
-  return this->texture.getSize().y / 2;
+  return this->sprite.getTexture()->getSize().y / 2;
 }
 
 sf::Vector2f Rocketship::getOriginalPosition() {

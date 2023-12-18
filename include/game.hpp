@@ -27,6 +27,7 @@ class Game : public EventListener {
     std::mt19937 rng;
     std::uniform_real_distribution<float> distX;
     std::uniform_real_distribution<float> distSpeed;
+    std::chrono::steady_clock::time_point lastFrameTime;
     std::vector<std::unique_ptr<SpaceObject>> spaceObjects;
     sf::Text *popupText = NULL;
     sf::Sprite *popupImage = NULL;
@@ -42,7 +43,7 @@ class Game : public EventListener {
 
     void initializePreGame(std::vector<std::string> preGameMsgs);
     void initializeStars();
-    void update(std::chrono::steady_clock::time_point *lastFrameTime);
+    void update();
     void renderPreGame();
     void render();
     void renderStars();
@@ -54,7 +55,7 @@ class Game : public EventListener {
     bool shouldAddNewSpaceObject();
     void popup(std::string msg, sf::Color color, sf::Vector2f position);
     void popup(sf::Sprite sprite, sf::Color color, sf::Vector2f position);
-    void togglePause() {this->isPaused = !this->isPaused;};
+    void togglePause();
 
   public:
     Game();

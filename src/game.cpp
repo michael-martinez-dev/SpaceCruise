@@ -98,12 +98,12 @@ void Game::run() {
     this->play = false;
     this->init();
     this->renderPreGame();
-    auto lastFrameTime = std::chrono::steady_clock::now();
+    this->lastFrameTime = std::chrono::steady_clock::now();
     while (!this->rocket->isDestroyed() && this->window.isOpen()) {
       this->handleEvents();
       this->render();
       if(!this->isPaused) {
-        this->update(&lastFrameTime);
+        this->update();
       }
     }
     this->renderPostGame();
@@ -143,16 +143,18 @@ void Game::handleEvents() {
         debug = !debug;
       } else if (event.key.code == sf::Keyboard::Space) {
         this->togglePause();
+      } else if (event.key.code == sf::Keyboard::Q) {
+        this->quit = true;
+        this->window.close();
       }
     }
   }
 }
 
-void Game::update(std::chrono::steady_clock::time_point *lastFrameTime) {
+void Game::update() {
   auto currentTime = std::chrono::steady_clock::now();
-  float deltaTime =
-      std::chrono::duration<float>(currentTime - *lastFrameTime).count();
-  *lastFrameTime = currentTime;
+  float deltaTime = std::chrono::duration<float>(currentTime - this->lastFrameTime).count();
+  this->lastFrameTime = currentTime;
 
   sf::Vector2u windowSize = this->window.getSize();
   this->timeSinceLastSpaceObject += deltaTime;
@@ -441,4 +443,9 @@ void Game::popup(std::string msg, sf::Color color, sf::Vector2f position) {
 
 void Game::popup(sf::Sprite sprite, sf::Color color, sf::Vector2f position) {
 
+}
+
+void Game::togglePause() {
+  this->lastFrameTime = std::chrono::steady_clock::now();
+  this->isPaused = !this->isPaused;
 }

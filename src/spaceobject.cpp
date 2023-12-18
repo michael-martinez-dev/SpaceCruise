@@ -1,4 +1,5 @@
 #include "spaceobject.hpp"
+#include "resourcemanager.hpp"
 #include "rocketship.hpp"
 
 #include <SFML/System/Vector2.hpp>
@@ -11,12 +12,9 @@
 #define MAX_DEGREE_RIGHT 45
 
 SpaceObject::SpaceObject(const std::string& texturePath, float speed, float x_position) {
+    this->texturePath = texturePath;
     sf::Vector2f startPosition(x_position, 0.0f);
-    if (!this->texture.loadFromFile(texturePath)) {
-        printf("Could not find texture path\n");
-        exit(1);
-    }
-    this->sprite.setTexture(texture);
+    this->sprite.setTexture(ResourceManager::getInstance()->getTexture(texturePath));
     this->sprite.setPosition(startPosition);
     sf::FloatRect bounds = this->sprite.getLocalBounds();
     this->sprite.setOrigin(bounds.width / 2, bounds.height / 2);
@@ -57,5 +55,5 @@ sf::FloatRect SpaceObject::getBoundingBox() const {
 };
 
 float SpaceObject::getCollisionRadius() const {
-  return this->texture.getSize().y / 2;
+  return ResourceManager::getInstance()->getTexture(this->texturePath).getSize().y / 2;
 }
